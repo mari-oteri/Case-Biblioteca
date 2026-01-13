@@ -178,8 +178,4 @@ pytest
 - Regras de negócio de empréstimo
 - Cálculo de multa
 
-<<<<<<< HEAD
 _____
-=======
-_____
->>>>>>> c75405c3c938506396a3e91a497ec48875aeee7d
