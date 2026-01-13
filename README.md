@@ -1,27 +1,33 @@
 # Case - API de Biblioteca Digital
 
-O projeto é baseado na implementação de uma API REST para um sistema de biblioteca, permitindo:
+O projeto é baseado na implementação de uma API REST para um sistema de biblioteca como case proposto. 
 
-- Cadastro e gerenciamento de *usuários*
-- Cadastro e consulta de *livros* e *autores*
-- Controle do ciclo de vida de *empréstimos*
+O sistema oferece as seguintes funcionalidades:
+
+- Cadastro e gerenciamento de usuários
+- Cadastro e consulta de livros e autores
+- Controle do ciclo de vida de empréstimos
 - Aplicação de regras de negócio como:
-  - Prazo padrão de empréstimo: *14 dias*
-  - Multa de *R$2,00 por dia de atraso*
-  - Máximo de *3 empréstimos ativos* por usuário
+    - Prazo padrão de empréstimo: 14 dias
+    - Multa de R$2,00 por dia de atraso
+    - Máximo de 3 empréstimos ativos por usuário
+- Paginação
+- Logging Estruturado
+- Testes automatizados
 
 ---
 
 ## Arquitetura do sistema
 
-app/            
- ├── main.py           - Ponto de entrada da aplicação        
- ├── core/             - Infraestrutura e utilidades (ex: paginação)      
- ├── db/               - Conexão e modelos do banco de dados         
- ├── schemas/          - Validação de dados da API (Pydantic)          
- ├── repositories/     - Acesso aos dados (camada de persistência)       
- ├── services/         - Regras de negócio        
- └── routers/          - Endpoints da API    
+    app/            
+    ├── main.py           - Ponto de entrada da aplicação        
+    ├── core/             - Infraestrutura e utilidades (paginação, logs e geração de dados)      
+    ├── db/               - Conexão e modelos do banco de dados         
+    ├── schemas/          - Validação de dados da API (Pydantic)          
+    ├── repositories/     - Acesso aos dados (camada de persistência)       
+    ├── services/         - Regras de negócio        
+    ├── routers/          - Endpoints da API       
+    └── tests/            - Testes automatizados  
 
 
 ### Fluxo de requisição:
@@ -36,22 +42,23 @@ Router → Service → Repository → Database
 - SQLAlchemy  
 - Pydantic  
 - Uvicorn  
-- SQLite (ambiente de desenvolvimento)
+- SQLite 
+- pytest + httpx
 
 ---
 
-## 🗄️ Entidades Principais
+## Entidades Principais
 
-### Usuário (User)
+### Usuário / User
 - id, name, email, created_at
 
-### Autor (Author)
+### Autor / Author
 - id, name
 
-### Livro (Book)
+### Livro / Book
 - id, title, author_id, total_copies, available_copies
 
-### Empréstimo (Loan)
+### Empréstimo / Loan
 - id, user_id, book_id, loan_date, due_date, return_date, fine_amount
 
 ---
@@ -67,9 +74,10 @@ Router → Service → Repository → Database
 
 ## Execução do Projeto
 
-### 1. Clonar o repositório
+### 
 
 ```bash
+1. Clonar o repositório
 git clone https://github.com/mari-oteri/Case-Biblioteca.git
 cd Case-Biblioteca
 
@@ -77,63 +85,97 @@ cd Case-Biblioteca
 
     python -m venv venv
 
-    Ativar o ambiente:
+3. Ativar o ambiente:
 
     venv\Scripts\activate
 
 
-3. Instalar dependências
+4. Instalar dependências
 
     pip install -r requirements.txt
 
-4. Executar a aplicação
+5. Executar a aplicação
 
     uvicorn app.main:app --reload
+```
 
-    Acesse no navegador:
-        - Para verificar se a aplicação está online:
-        http://127.0.0.1:8000/
+Acesse no navegador:
+- Para verificar se a aplicação está online:
+http://127.0.0.1:8000/
 
-        - Para acessar a documentação / Swagger:
-        http://127.0.0.1:8000/docs
+- Para acessar a documentação / Swagger:
+http://127.0.0.1:8000/docs
 
 
-⸻
 
-🌐 Principais Endpoints
 
-Usuários
-	•	POST /users
-	•	GET /users
-	•	GET /users/{id}
+____
 
-Autores
-	•	POST /authors
-	•	GET /authors
-
-Livros
-	•	POST /books
-	•	GET /books
-	•	GET /books/{id}/available
-
-Empréstimos
-	•	POST /loans
-	•	POST /loans/{id}/return
-	•	GET /loans/active
-	•	GET /loans/overdue
-
-⸻
-
-📦 Paginação
+### Paginação
 
 Os endpoints de listagem aceitam:
 
 ?page=1&size=10
 
-⸻
+_____
 
-🧠 Decisões Técnicas
-	•	Arquitetura em camadas para facilitar manutenção e testes
-	•	Separação clara entre regras de negócio e acesso a dados
-	•	Uso de Pydantic para validação e documentação automática
-	•	Banco SQLite para desenvolvimento local (facilmente substituível por PostgreSQL em produção)
+### Exemplos de uso da API 
+
+#### Criar Usuário
+
+```bash
+POST /users
+{
+  "name": "Ana",
+  "email": "ana@email.com"
+}
+```
+
+#### Criar Livro
+
+```bash
+POST /books
+{
+  "title": "Alice no País das Maravilhas",
+  "author_id": 1,
+  "total_copies": 5
+}
+```
+
+#### Realizar Empréstimo
+
+```bash
+POST /loans
+{
+  "user_id": 1,
+  "book_id": 1
+}
+```
+
+#### Devolver Livro
+
+```bash
+POST /loans/1/return
+```
+
+#### Listar Histórico do Usuário
+
+```bash
+GET /users/1/loans
+```
+
+____
+
+### Testes Automatizados
+
+#### Execução (Dentro do venv / ambiente virtual )
+
+```bash
+pytest
+```
+#### Foram desenvolvidos alguns testes de integração que validam algumas regras de negócio, dentre eles:
+- Criação e listagem de livros
+- Regras de negócio de empréstimo
+- Cálculo de multa
+
+_____
