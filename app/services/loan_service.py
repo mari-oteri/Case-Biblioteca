@@ -2,6 +2,9 @@ from datetime import date, timedelta
 from sqlalchemy.orm import Session
 from app.db import models
 from app.repositories import loan_repository, book_repository
+from app.core.logger import logger
+from app.schemas import loan
+
 
 MAX_LOANS = 3
 LOAN_DAYS = 14
@@ -28,6 +31,8 @@ def create_loan(db: Session, user_id: int, book_id: int):
         due_date=due_date
     )
 
+    logger.info(f"Loan created: user={user_id}, book={book_id}")    
+
     return loan_repository.create_loan(db, loan)
 
 def return_loan(db: Session, loan_id: int):
@@ -44,10 +49,16 @@ def return_loan(db: Session, loan_id: int):
     loan.book.available_copies += 1
 
     db.commit()
+    
+    logger.info(f"Loan returned: loan_id={loan_id}, fine={loan.fine_amount}")
+    
     return loan
 
-def list_active_loans(db: Session):
-    return loan_repository.list_active_loans(db)
+def list_active_loans(db: Session, page: int, size: int):
+    return loan_repository.list_active_loans(db, page, size)
 
 def list_overdue_loans(db: Session):
     return loan_repository.list_overdue_loans(db, date.today())
+
+def get_user_loans(db: Session, user_id: int):
+    return loan_repository.get_loans_by_user(db, user_id)

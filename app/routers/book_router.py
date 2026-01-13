@@ -18,8 +18,12 @@ def create_book(book: BookCreate, db: Session = Depends(get_db)):
     return book_service.create_book(db, book.title, book.author_id, book.total_copies)
 
 @router.get("/", response_model=list[BookResponse])
-def list_books(db: Session = Depends(get_db)):
-    return book_service.list_books(db)
+def list_books(
+    page: int = 1,
+    size: int = 10,
+    db: Session = Depends(get_db)
+):
+    return book_service.list_books(db, page, size)
 
 @router.get("/{book_id}/available")
 def check_availability(book_id: int, db: Session = Depends(get_db)):
