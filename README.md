@@ -8,9 +8,9 @@ O sistema oferece as seguintes funcionalidades:
 - Cadastro e consulta de livros e autores
 - Controle do ciclo de vida de empréstimos
 - Aplicação de regras de negócio como:
-- Prazo padrão de empréstimo: 14 dias
-- Multa de R$2,00 por dia de atraso
-- Máximo de 3 empréstimos ativos por usuário
+    - Prazo padrão de empréstimo: 14 dias
+    - Multa de R$2,00 por dia de atraso
+    - Máximo de 3 empréstimos ativos por usuário
 
 ---
 
