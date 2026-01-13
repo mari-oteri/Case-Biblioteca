@@ -11,6 +11,9 @@ O sistema oferece as seguintes funcionalidades:
     - Prazo padrão de empréstimo: 14 dias
     - Multa de R$2,00 por dia de atraso
     - Máximo de 3 empréstimos ativos por usuário
+- Paginação
+- Logging Estruturado
+- Testes automatizados
 
 ---
 
@@ -23,7 +26,8 @@ O sistema oferece as seguintes funcionalidades:
     ├── schemas/          - Validação de dados da API (Pydantic)          
     ├── repositories/     - Acesso aos dados (camada de persistência)       
     ├── services/         - Regras de negócio        
-    └── routers/          - Endpoints da API    
+    ├── routers/          - Endpoints da API       
+    └── tests/            - Testes automatizados  
 
 
 ### Fluxo de requisição:
@@ -38,7 +42,8 @@ Router → Service → Repository → Database
 - SQLAlchemy  
 - Pydantic  
 - Uvicorn  
-- SQLite (ambiente de desenvolvimento)
+- SQLite 
+- pytest + httpx
 
 ---
 
@@ -80,16 +85,16 @@ cd Case-Biblioteca
 
     python -m venv venv
 
-    Ativar o ambiente:
+3. Ativar o ambiente:
 
     venv\Scripts\activate
 
 
-3. Instalar dependências
+4. Instalar dependências
 
     pip install -r requirements.txt
 
-4. Executar a aplicação
+5. Executar a aplicação
 
     uvicorn app.main:app --reload
 ```
@@ -106,29 +111,6 @@ http://127.0.0.1:8000/docs
 
 ____
 
-### Principais Endpoints
-
-Usuários
-- POST /users
-- GET /users
-- GET /users/{id}
-
-Autores
-- POST /authors
-- GET /authors
-
-Livros
-- POST /books
-- GET /books
-- GET /books/{id}/available
-
-Empréstimos
-- POST /loans
-- POST /loans/{id}/return
-- GET /loans/active
-- GET /loans/overdue
-
-____
 ### Paginação
 
 Os endpoints de listagem aceitam:
@@ -137,8 +119,63 @@ Os endpoints de listagem aceitam:
 
 _____
 
-### Decisões Técnicas
-- Arquitetura em camadas para facilitar manutenção e testes
-- Separação clara entre regras de negócio e acesso a dados
-- Uso de Pydantic para validação e documentação automática
-- Banco SQLite para desenvolvimento local (facilmente substituível por PostgreSQL em produção)
+### Exemplos de uso da API 
+
+#### Criar Usuário
+
+```bash
+POST /users
+{
+  "name": "Ana",
+  "email": "ana@email.com"
+}
+```
+
+#### Criar Livro
+
+```bash
+POST /books
+{
+  "title": "Clean Code",
+  "author_id": 1,
+  "total_copies": 5
+}
+```
+
+#### Realizar Empréstimo
+
+```bash
+POST /loans
+{
+  "user_id": 1,
+  "book_id": 1
+}
+```
+
+#### Devolver Livro
+
+```bash
+POST /loans/1/return
+```
+
+#### Listar Histórico do Usuário
+
+```bash
+GET /users/1/loans
+```
+
+____
+
+### Testes Automatizados
+
+#### Execução (Dentro do venv / ambiente virtual )
+
+```bash
+pytest
+```
+#### Foram desenvolvidos alguns testes de integração que validam algumas regras de negócio, dentre eles:
+- Criação e listagem de livros
+- Regras de negócio de empréstimo
+- Cálculo de multa
+
+_____
